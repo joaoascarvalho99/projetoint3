@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Productivity Hub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Productivity Hub</h1>
+
+<div class="card">
+  <h2>Quote</h2>
+  <p id="quote"></p>
+  <button onclick="loadQuote()">Nova quote</button>
+</div>
+
+<div class="card">
+  <h2>Pomodoro</h2>
+  <h1 id="timer">25:00</h1>
+  <button onclick="startPomodoro()">Start</button>
+  <button onclick="resetPomodoro()">Reset</button>
+</div>
+
+<div class="card">
+  <h2>Calculadora</h2>
+  <input id="calc" readonly>
+  <div class="grid">
+    <button onclick="add('7')">7</button>
+    <button onclick="add('8')">8</button>
+    <button onclick="add('9')">9</button>
+    <button onclick="add('/')">/</button>
+
+    <button onclick="add('4')">4</button>
+    <button onclick="add('5')">5</button>
+    <button onclick="add('6')">6</button>
+    <button onclick="add('*')">*</button>
+
+    <button onclick="add('1')">1</button>
+    <button onclick="add('2')">2</button>
+    <button onclick="add('3')">3</button>
+    <button onclick="add('-')">-</button>
+
+    <button onclick="add('0')">0</button>
+    <button onclick="calcResult()">=</button>
+    <button onclick="clearCalc()">C</button>
+    <button onclick="add('+')">+</button>
+  </div>
+</div>
+
+<script>
+/* QUOTES */
+function loadQuote() {
+  fetch('../backend/quotes.php')
+    .then(r => r.json())
+    .then(q => document.getElementById('quote').innerText = q);
+}
+loadQuote();
+
+/* POMODORO */
+let time = 1500;
+let interval;
+
+function startPomodoro() {
+  if (interval) return;
+  interval = setInterval(() => {
+    time--;
+    updateTimer();
+    if (time <= 0) {
+      clearInterval(interval);
+      interval = null;
+      alert("Tempo terminado!");
+    }
+  }, 1000);
+}
+
+function resetPomodoro() {
+  clearInterval(interval);
+  interval = null;
+  time = 1500;
+  updateTimer();
+}
+
+function updateTimer() {
+  const min = String(Math.floor(time / 60)).padStart(2,'0');
+  const sec = String(time % 60).padStart(2,'0');
+  document.getElementById('timer').innerText = min + ":" + sec;
+}
+
+/* CALCULADORA */
+function add(v) {
+  document.getElementById('calc').value += v;
+}
+
+function calcResult() {
+  try {
+    document.getElementById('calc').value =
+      eval(document.getElementById('calc').value);
+  } catch {
+    alert("Erro");
+  }
+}
+
+function clearCalc() {
+  document.getElementById('calc').value = "";
+}
+</script>
+
+</body>
+</html>
